@@ -4,25 +4,23 @@ const prisma = new PrismaClient();
 
 async function testConnection() {
   try {
-    console.log("🔄 Probando conexión con la base de datos...\n");
+    console.log(" Probando conexión con la base de datos...\n");
     
-    // Prueba de conexión básica
     await prisma.$connect();
-    console.log("✅ Conexión exitosa con la base de datos\n");
+    console.log(" Conexión exitosa con la base de datos\n");
     
-    // Obtener todas las personas
-    console.log("📋 Obteniendo personas...\n");
+    console.log(" Obteniendo personas...\n");
     const personas = await prisma.personas.findMany({
-      take: 10, // Limitar a 10 registros para la prueba
+      take: 10, 
       orderBy: {
         created_at: 'desc'
       }
     });
     
-    console.log(`📊 Total de personas encontradas: ${personas.length}\n`);
+    console.log(` Total de personas encontradas: ${personas.length}\n`);
     
     if (personas.length > 0) {
-      console.log("👥 Primeras personas:");
+      console.log(" Primeras personas:");
       personas.forEach((persona, index) => {
         console.log(`\n${index + 1}. RFC: ${persona.rfc}`);
         console.log(`   Tipo: ${persona.tipo_persona}`);
@@ -31,11 +29,11 @@ async function testConnection() {
         console.log(`   Estatus: ${persona.estatus}`);
       });
     } else {
-      console.log("⚠️  No se encontraron personas en la base de datos");
+      console.log("No se encontraron personas en la base de datos");
     }
     
     // Estadísticas adicionales
-    console.log("\n📈 Estadísticas:");
+    console.log("\n Estadísticas:");
     const totalPersonas = await prisma.personas.count();
     const personasFisicas = await prisma.personas.count({
       where: { tipo_persona: 'FISICA' }
@@ -53,7 +51,7 @@ async function testConnection() {
     console.log(`   Personas activas: ${personasActivas}`);
     
   } catch (error) {
-    console.error("❌ Error al conectar con la base de datos:");
+    console.error("Error al conectar con la base de datos:");
     console.error(error);
   } finally {
     await prisma.$disconnect();
@@ -61,5 +59,5 @@ async function testConnection() {
   }
 }
 
-// Ejecutar el script
+
 testConnection();

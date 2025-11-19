@@ -1,4 +1,4 @@
-USE CirculoBancario;
+USE CirculoCredito;
 GO
 
 -- ==========================================
@@ -75,18 +75,26 @@ VALUES
 GO
 
 -- Obligaciones de Sofía (persona_id = 2) - Historial mixto
-INSERT INTO obligaciones_crediticias 
-    (numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, tipo_credito, 
-     monto_original, saldo_actual, limite_credito, tasa_interes, plazo_meses, pago_mensual_estimado,
-     fecha_solicitud, fecha_apertura, fecha_vencimiento, estatus_credito, dias_atraso, monto_vencido)
-VALUES 
-    ('PERS-BBVA-2023-456789', 2, 'BBVA México', 'BBVA001', 'BANCO', 'CREDITO_PERSONAL',
-     80000.00, 52000.00, NULL, 24.90, 36, 2850.00,
-     '2023-06-01', '2023-06-05', '2026-06-05', 'VIGENTE', 15, 2850.00),
-    
-    ('TC-HSBC-2024-112233', 2, 'HSBC México', 'HSBC001', 'BANCO', 'TARJETA_CREDITO',
-     15000.00, 14200.00, 15000.00, 48.90, NULL, 1420.00,
-     '2024-01-12', '2024-01-15', NULL, 'VIGENTE', 0);
+INSERT INTO obligaciones_crediticias (
+    numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, 
+    tipo_credito, monto_original, saldo_actual, limite_credito, tasa_interes, 
+    plazo_meses, pago_mensual_estimado, fecha_solicitud, fecha_apertura, 
+    fecha_vencimiento, estatus_credito, dias_atraso, monto_vencido
+) VALUES 
+    ('PERS-BBVA-2023-456789', 2, 'BBVA México', 'BBVA001', 'BANCO', 'CREDITO_PERSONAL', 
+     80000.00, 52000.00, NULL, 24.90, 36, 2850.00, '2023-06-01', '2023-06-05', 
+     '2026-06-05', 'VIGENTE', 15, 2850.00);
+GO
+
+INSERT INTO obligaciones_crediticias (
+    numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, 
+    tipo_credito, monto_original, saldo_actual, limite_credito, tasa_interes, 
+    plazo_meses, pago_mensual_estimado, fecha_solicitud, fecha_apertura, 
+    fecha_vencimiento, estatus_credito, dias_atraso
+) VALUES 
+    ('TC-HSBC-2024-112233', 2, 'HSBC México', 'HSBC001', 'BANCO', 'TARJETA_CREDITO', 
+     15000.00, 14200.00, 15000.00, 48.90, NULL, 1420.00, '2024-01-12', '2024-01-15', 
+     NULL, 'VIGENTE', 0);
 GO
 
 -- Obligaciones de Carlos (persona_id = 3) - Excelente historial
@@ -105,18 +113,19 @@ VALUES
 GO
 
 -- Obligaciones de Jessica (persona_id = 4) - Mal historial
-INSERT INTO obligaciones_crediticias 
-    (numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, tipo_credito, 
-     monto_original, saldo_actual, tasa_interes, plazo_meses, pago_mensual_estimado,
-     fecha_solicitud, fecha_apertura, fecha_vencimiento, estatus_credito, dias_atraso, monto_vencido, pagos_atrasados_totales)
-VALUES 
-    ('PERS-COPPEL-2022-667788', 4, 'BanCoppel', 'COPP001', 'BANCO', 'CREDITO_PERSONAL',
-     45000.00, 38500.00, 34.90, 24, 2450.00,
-     '2022-11-05', '2022-11-10', '2024-11-10', 'CARTERA_VENCIDA', 125, 12250.00, 5),
-    
-    ('TC-FAMSA-2023-889900', 4, 'Banco Famsa', 'FAMS001', 'BANCO', 'TARJETA_CREDITO',
-     10000.00, 9850.00, 10000.00, 55.90, NULL, 985.00,
-     '2023-03-15', '2023-03-20', NULL, 'VENCIDO', 92, 2955.00, 3);
+INSERT INTO obligaciones_crediticias (
+    numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, 
+    tipo_credito, monto_original, saldo_actual, limite_credito, tasa_interes, 
+    plazo_meses, pago_mensual_estimado, fecha_solicitud, fecha_apertura, 
+    fecha_vencimiento, estatus_credito, dias_atraso, monto_vencido, pagos_atrasados_totales
+) VALUES 
+    ('PERS-COPPEL-2022-667788', 4, 'BanCoppel', 'COPP001', 'BANCO', 'CREDITO_PERSONAL', 
+     45000.00, 38500.00, NULL, 34.90, 24, 2450.00, '2022-11-05', '2022-11-10', 
+     '2024-11-10', 'CARTERA_VENCIDA', 125, 12250.00, 5),
+     
+    ('TC-FAMSA-2023-889900', 4, 'Banco Famsa', 'FAMS001', 'BANCO', 'TARJETA_CREDITO', 
+     10000.00, 9850.00, 10000.00, 55.90, NULL, 985.00, '2023-03-15', '2023-03-20', 
+     NULL, 'VENCIDO', 92, 2955.00, 3);
 GO
 
 -- Obligaciones de Miguel (persona_id = 5) - Buen historial profesional
