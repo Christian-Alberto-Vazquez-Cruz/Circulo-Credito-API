@@ -31,7 +31,6 @@ CREATE TABLE personas (
 );
 GO
 
--- Índices-
 CREATE INDEX idx_personas_rfc ON personas(rfc);
 CREATE INDEX idx_personas_tipo ON personas(tipo_persona);
 GO
@@ -53,7 +52,6 @@ CREATE TABLE personas_fisicas (
 );
 GO
 
--- Índices --
 CREATE INDEX idx_pf_curp ON personas_fisicas(curp);
 GO
 
@@ -75,8 +73,6 @@ GO
 
 
 -- Tabla de obligaciones crediticias --
-
-
 CREATE TABLE obligaciones_crediticias (
     id INT IDENTITY(1,1) PRIMARY KEY,
     numero_contrato VARCHAR(50) UNIQUE NOT NULL,
@@ -98,22 +94,18 @@ CREATE TABLE obligaciones_crediticias (
         'CREDITO_PYME'
     )),
     
-    -- Montos y condiciones
     monto_original DECIMAL(15,2) NOT NULL,
     saldo_actual DECIMAL(15,2) NOT NULL DEFAULT 0,
-    limite_credito DECIMAL(15,2), -- Solo para tarjetas/líneas de crédito
-    tasa_interes DECIMAL(5,2),
+    limite_credito DECIMAL(15,2), 
     plazo_meses INT,
     pago_mensual_estimado DECIMAL(10,2),
     
-    -- Fechas importantes
     fecha_solicitud DATE,
     fecha_apertura DATE NOT NULL,
     fecha_vencimiento DATE,
     fecha_cierre DATE,
     fecha_ultimo_pago DATE,
     
-    -- Estado del crédito
     estatus_credito VARCHAR(20) DEFAULT 'VIGENTE' CHECK (estatus_credito IN (
         'VIGENTE',
         'VENCIDO',
@@ -124,12 +116,10 @@ CREATE TABLE obligaciones_crediticias (
         'CASTIGADO'
     )),
     
-    -- Métricas de riesgo
     dias_atraso INT DEFAULT 0,
     monto_vencido DECIMAL(15,2) DEFAULT 0,
     pagos_atrasados_totales INT DEFAULT 0,
     
-    -- Auditoría
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
 
@@ -143,21 +133,18 @@ CREATE TABLE obligaciones_crediticias (
 );
 GO
 
--- Índices importantes
 CREATE INDEX idx_obligaciones_persona ON obligaciones_crediticias(persona_id);
 CREATE INDEX idx_obligaciones_estatus ON obligaciones_crediticias(estatus_credito);
 CREATE INDEX idx_obligaciones_fecha ON obligaciones_crediticias(fecha_apertura);
 GO
 
--- ==========================================
--- HISTORIAL DE PAGOS
--- ==========================================
+-- Tabla historial de pagos --
 
 CREATE TABLE historial_pagos (
     id INT IDENTITY(1,1) PRIMARY KEY,
     obligacion_id INT NOT NULL,
     
-    numero_pago INT NOT NULL, -- 1, 2, 3... del total de pagos
+    numero_pago INT NOT NULL,
     fecha_programada DATE NOT NULL,
     fecha_pago_real DATE,
     
@@ -191,10 +178,7 @@ CREATE INDEX idx_pagos_obligacion ON historial_pagos(obligacion_id);
 CREATE INDEX idx_pagos_estatus ON historial_pagos(estatus_pago);
 GO
 
--- ==========================================
--- CONSULTAS EXTERNAS (Tracking)
--- ==========================================
-
+-- Tabla historial de consultas --
 CREATE TABLE consultas_externas (
     id INT IDENTITY(1,1) PRIMARY KEY,
     persona_id INT NOT NULL,
@@ -229,10 +213,10 @@ GO
 -- ==========================================
 -- Vistas 
 -- ==========================================
--- ==========================================
--- Vista 1: Resumen crediticio por RFC
--- Agregaciones básicas de obligaciones
--- ==========================================
+
+
+-- Vista 1: Resumen crediticio por RFC --
+
 CREATE OR ALTER VIEW vw_resumen_crediticio AS
 SELECT 
     p.id AS persona_id,
@@ -274,10 +258,7 @@ GROUP BY
     p.id, p.rfc, p.tipo_persona, p.estatus, p.email, p.telefono, p.created_at;
 GO
 
--- ==========================================
--- Vista 2: Información completa de personas
--- Unifica persona física y moral
--- ==========================================
+-- Vista 2: Información completa de personas --
 CREATE OR ALTER VIEW vw_persona_completa AS
 SELECT
     p.id,
@@ -318,10 +299,8 @@ LEFT JOIN personas_fisicas pf ON pf.persona_id = p.id
 LEFT JOIN personas_morales pm ON pm.persona_id = p.id;
 GO
 
--- ==========================================
--- Vista 3: Detalle de obligaciones activas
--- Sin calificaciones ni interpretaciones
--- ==========================================
+
+-- Vista 3: Detalle de obligaciones activas --
 CREATE OR ALTER VIEW vw_detalle_obligaciones AS
 SELECT 
     oc.id AS obligacion_id,
@@ -388,10 +367,9 @@ LEFT JOIN personas_fisicas pf ON pf.persona_id = p.id
 LEFT JOIN personas_morales pm ON pm.persona_id = p.id;
 GO
 
--- ==========================================
--- Vista 4: Historial detallado de pagos
--- Solo datos objetivos de comportamiento
--- ==========================================
+
+-- Vista 4: Historial detallado de pagos --
+
 CREATE OR ALTER VIEW vw_historial_pagos AS
 SELECT 
     hp.id AS pago_id,
@@ -438,9 +416,9 @@ INNER JOIN obligaciones_crediticias oc ON hp.obligacion_id = oc.id
 INNER JOIN personas p ON oc.persona_id = p.id;
 GO
 
--- ==========================================
--- Vista 6: Pagos pendientes
--- ==========================================
+
+-- Vista 6: Pagos pendientes --
+
 CREATE OR ALTER VIEW vw_pagos_pendientes AS
 SELECT 
     hp.id AS pago_id,
@@ -482,10 +460,9 @@ WHERE hp.estatus_pago IN ('PENDIENTE', 'ATRASADO_1_29', 'ATRASADO_30_59',
   AND oc.estatus_credito IN ('VIGENTE', 'VENCIDO');
 GO
 
--- ==========================================
--- Vista 7: Estadísticas de comportamiento de pago
--- Datos para análisis de patrones
--- ==========================================
+
+-- Vista 7: Estadísticas de comportamiento de pago --
+
 CREATE OR ALTER VIEW vw_estadisticas_pago AS
 SELECT 
     p.id AS persona_id,
@@ -508,7 +485,6 @@ SELECT
     AVG(CAST(hp.dias_atraso_registrado AS FLOAT)) AS promedio_dias_atraso,
     MAX(hp.dias_atraso_registrado) AS max_dias_atraso_registrado,
     
-    -- Porcentaje de cumplimiento
     CASE 
         WHEN COUNT(hp.id) > 0 
         THEN ROUND(
