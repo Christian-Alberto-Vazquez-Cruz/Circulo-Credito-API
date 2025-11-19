@@ -325,7 +325,7 @@ SELECT
     oc.monto_original,
     oc.saldo_actual,
     oc.limite_credito,
-    oc.tasa_interes,
+
     oc.plazo_meses,
     oc.pago_mensual_estimado,
     oc.fecha_solicitud,
