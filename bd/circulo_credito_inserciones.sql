@@ -4,12 +4,11 @@ GO
 -- ==========================================
 -- 1. API CLIENT (Solo una)
 -- ==========================================
--- API Key original: CB_live_9k7m2p4x8n6v5b3w1q0r
--- Hash SHA-256 de la clave
+
 INSERT INTO api_clients (nombre_entidad, api_key, estatus)
 VALUES (
-    'Banco Nacional de Crédito',
-    '8f4e9a2c1d7b6f3e5a9c8d1f0b2e4a6c7d9f1e3b5a7c9e1d3f5b7a9c1e3d5f7b',
+    'Credito-Seguro',
+    'key_cdef3456bb9aa09877654321aa99dd3f',
     'ACTIVO'
 );
 GO
@@ -62,128 +61,129 @@ GO
 -- Obligaciones de Luis Alberto (persona_id = 1) - Buen historial
 INSERT INTO obligaciones_crediticias 
     (numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, tipo_credito, 
-     monto_original, saldo_actual, limite_credito, tasa_interes, plazo_meses, pago_mensual_estimado,
+     monto_original, saldo_actual, limite_credito, plazo_meses, pago_mensual_estimado,
      fecha_solicitud, fecha_apertura, fecha_vencimiento, estatus_credito, dias_atraso)
 VALUES 
     ('TC-BAZ-2023-001547', 1, 'Banco Azteca', 'BAZ001', 'BANCO', 'TARJETA_CREDITO', 
-     30000.00, 8500.00, 30000.00, 42.50, NULL, 850.00,
+     30000.00, 8500.00, 30000.00, NULL, 850.00,
      '2023-01-10', '2023-01-15', NULL, 'VIGENTE', 0),
     
     ('AUTO-SANT-2022-098765', 1, 'Banco Santander', 'SANT001', 'BANCO', 'CREDITO_AUTOMOTRIZ',
-     285000.00, 145000.00, NULL, 13.50, 60, 5980.00,
+     285000.00, 145000.00, NULL, 60, 5980.00,
      '2022-03-15', '2022-03-20', '2027-03-20', 'VIGENTE', 0);
 GO
 
 -- Obligaciones de Sofía (persona_id = 2) - Historial mixto
 INSERT INTO obligaciones_crediticias (
     numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, 
-    tipo_credito, monto_original, saldo_actual, limite_credito, tasa_interes, 
+    tipo_credito, monto_original, saldo_actual, limite_credito, 
     plazo_meses, pago_mensual_estimado, fecha_solicitud, fecha_apertura, 
     fecha_vencimiento, estatus_credito, dias_atraso, monto_vencido
 ) VALUES 
     ('PERS-BBVA-2023-456789', 2, 'BBVA México', 'BBVA001', 'BANCO', 'CREDITO_PERSONAL', 
-     80000.00, 52000.00, NULL, 24.90, 36, 2850.00, '2023-06-01', '2023-06-05', 
+     80000.00, 52000.00, NULL, 36, 2850.00, '2023-06-01', '2023-06-05', 
      '2026-06-05', 'VIGENTE', 15, 2850.00);
 GO
 
 INSERT INTO obligaciones_crediticias (
     numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, 
-    tipo_credito, monto_original, saldo_actual, limite_credito, tasa_interes, 
+    tipo_credito, monto_original, saldo_actual, limite_credito, 
     plazo_meses, pago_mensual_estimado, fecha_solicitud, fecha_apertura, 
     fecha_vencimiento, estatus_credito, dias_atraso
 ) VALUES 
     ('TC-HSBC-2024-112233', 2, 'HSBC México', 'HSBC001', 'BANCO', 'TARJETA_CREDITO', 
-     15000.00, 14200.00, 15000.00, 48.90, NULL, 1420.00, '2024-01-12', '2024-01-15', 
+     15000.00, 14200.00, 15000.00, NULL, 1420.00, '2024-01-12', '2024-01-15', 
      NULL, 'VIGENTE', 0);
 GO
 
 -- Obligaciones de Carlos (persona_id = 3) - Excelente historial
 INSERT INTO obligaciones_crediticias 
     (numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, tipo_credito, 
-     monto_original, saldo_actual, limite_credito, tasa_interes, plazo_meses, pago_mensual_estimado,
+     monto_original, saldo_actual, limite_credito, plazo_meses, pago_mensual_estimado,
      fecha_solicitud, fecha_apertura, fecha_vencimiento, fecha_cierre, estatus_credito)
 VALUES 
     ('HIP-BANORT-2019-789012', 3, 'Banco del Noreste', 'BNOR001', 'BANCO', 'CREDITO_HIPOTECARIO',
-     1500000.00, 1120000.00, NULL, 10.50, 240, 16250.00,
+     1500000.00, 1120000.00, NULL, 240, 16250.00,
      '2019-08-10', '2019-09-01', '2039-09-01', NULL, 'VIGENTE'),
     
     ('TC-BANAM-2021-334455', 3, 'Citibanamex', 'BANAM001', 'BANCO', 'TARJETA_CREDITO',
-     50000.00, 0.00, 50000.00, 38.90, NULL, 0.00,
+     50000.00, 0.00, 50000.00, NULL, 0.00,
      '2021-05-20', '2021-05-25', NULL, '2024-10-15', 'CERRADO');
 GO
 
 -- Obligaciones de Jessica (persona_id = 4) - Mal historial
 INSERT INTO obligaciones_crediticias (
     numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, 
-    tipo_credito, monto_original, saldo_actual, limite_credito, tasa_interes, 
+    tipo_credito, monto_original, saldo_actual, limite_credito, 
     plazo_meses, pago_mensual_estimado, fecha_solicitud, fecha_apertura, 
     fecha_vencimiento, estatus_credito, dias_atraso, monto_vencido, pagos_atrasados_totales
 ) VALUES 
     ('PERS-COPPEL-2022-667788', 4, 'BanCoppel', 'COPP001', 'BANCO', 'CREDITO_PERSONAL', 
-     45000.00, 38500.00, NULL, 34.90, 24, 2450.00, '2022-11-05', '2022-11-10', 
+     45000.00, 38500.00, NULL, 24, 2450.00, '2022-11-05', '2022-11-10', 
      '2024-11-10', 'CARTERA_VENCIDA', 125, 12250.00, 5),
      
     ('TC-FAMSA-2023-889900', 4, 'Banco Famsa', 'FAMS001', 'BANCO', 'TARJETA_CREDITO', 
-     10000.00, 9850.00, 10000.00, 55.90, NULL, 985.00, '2023-03-15', '2023-03-20', 
+     10000.00, 9850.00, 10000.00, NULL, 985.00, '2023-03-15', '2023-03-20', 
      NULL, 'VENCIDO', 92, 2955.00, 3);
 GO
 
 -- Obligaciones de Miguel (persona_id = 5) - Buen historial profesional
 INSERT INTO obligaciones_crediticias 
     (numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, tipo_credito, 
-     monto_original, saldo_actual, limite_credito, tasa_interes, plazo_meses, pago_mensual_estimado,
+     monto_original, saldo_actual, limite_credito, plazo_meses, pago_mensual_estimado,
      fecha_solicitud, fecha_apertura, fecha_vencimiento, estatus_credito)
 VALUES 
     ('NOM-BANORT-2023-445566', 5, 'Banorte', 'BNORT001', 'BANCO', 'CREDITO_NOMINA',
-     120000.00, 78000.00, NULL, 18.50, 48, 3250.00,
+     120000.00, 78000.00, NULL, 48, 3250.00,
      '2023-02-01', '2023-02-05', '2027-02-05', 'VIGENTE'),
     
     ('TC-INVERLAT-2022-778899', 5, 'Scotiabank Inverlat', 'INVER001', 'BANCO', 'TARJETA_CREDITO',
-     40000.00, 12500.00, 40000.00, 36.90, NULL, 1250.00,
+     40000.00, 12500.00, 40000.00, NULL, 1250.00,
      '2022-07-10', '2022-07-15', NULL, 'VIGENTE');
 GO
 
 -- Obligaciones empresariales - Tech Solutions (persona_id = 6)
 INSERT INTO obligaciones_crediticias 
     (numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, tipo_credito, 
-     monto_original, saldo_actual, tasa_interes, plazo_meses, pago_mensual_estimado,
+     monto_original, saldo_actual, plazo_meses, pago_mensual_estimado,
      fecha_solicitud, fecha_apertura, fecha_vencimiento, estatus_credito)
 VALUES 
     ('PYME-NAFIN-2023-112234', 6, 'Nacional Financiera', 'NAFIN001', 'BANCO', 'CREDITO_PYME',
-     500000.00, 325000.00, 12.90, 36, 16850.00,
+     500000.00, 325000.00, 36, 16850.00,
      '2023-04-15', '2023-05-01', '2026-05-01', 'VIGENTE'),
     
     ('EMP-BBVA-2024-334456', 6, 'BBVA México', 'BBVA001', 'BANCO', 'CREDITO_EMPRESARIAL',
-     800000.00, 720000.00, 14.50, 60, 18200.00,
+     800000.00, 720000.00, 60, 18200.00,
      '2024-01-10', '2024-01-20', '2029-01-20', 'VIGENTE');
 GO
+
 
 -- Obligaciones empresariales - Café Orgánico (persona_id = 7)
 INSERT INTO obligaciones_crediticias 
     (numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, tipo_credito, 
-     monto_original, saldo_actual, tasa_interes, plazo_meses, pago_mensual_estimado,
+     monto_original, saldo_actual, plazo_meses, pago_mensual_estimado,
      fecha_solicitud, fecha_apertura, fecha_vencimiento, estatus_credito, dias_atraso, monto_vencido)
 VALUES 
     ('PYME-BANORT-2023-556677', 7, 'Banorte', 'BNORT001', 'BANCO', 'CREDITO_PYME',
-     250000.00, 185000.00, 15.90, 24, 12450.00,
+     250000.00, 185000.00, 24, 12450.00,
      '2023-09-01', '2023-09-10', '2025-09-10', 'VIGENTE', 22, 12450.00);
 GO
+
 
 -- Obligaciones empresariales - ConstruMax (persona_id = 8)
 INSERT INTO obligaciones_crediticias 
     (numero_contrato, persona_id, entidad_otorgante, clave_entidad, tipo_entidad, tipo_credito, 
-     monto_original, saldo_actual, tasa_interes, plazo_meses, pago_mensual_estimado,
+     monto_original, saldo_actual, plazo_meses, pago_mensual_estimado,
      fecha_solicitud, fecha_apertura, fecha_vencimiento, estatus_credito)
 VALUES 
     ('EMP-SANT-2022-998877', 8, 'Banco Santander', 'SANT001', 'BANCO', 'CREDITO_EMPRESARIAL',
-     2500000.00, 1850000.00, 11.50, 84, 42500.00,
+     2500000.00, 1850000.00, 84, 42500.00,
      '2022-06-15', '2022-07-01', '2029-07-01', 'VIGENTE'),
     
     ('EMP-HSBC-2023-665544', 8, 'HSBC México', 'HSBC001', 'BANCO', 'CREDITO_EMPRESARIAL',
-     1200000.00, 980000.00, 13.20, 60, 25800.00,
+     1200000.00, 980000.00, 60, 25800.00,
      '2023-03-20', '2023-04-01', '2028-04-01', 'VIGENTE');
 GO
-
 -- ==========================================
 -- 5. HISTORIAL DE PAGOS
 -- ==========================================
@@ -271,7 +271,4 @@ PRINT 'Total personas morales: 3';
 PRINT 'Total obligaciones crediticias: 15';
 PRINT 'Total registros de pagos: 28';
 PRINT '';
-PRINT 'API Key generada (guardar en lugar seguro):';
-PRINT 'CB_live_9k7m2p4x8n6v5b3w1q0r';
-PRINT 'Hash almacenado: 8f4e9a2c1d7b6f3e5a9c8d1f0b2e4a6c7d9f1e3b5a7c9e1d3f5b7a9c1e3d5f7b';
 GO
