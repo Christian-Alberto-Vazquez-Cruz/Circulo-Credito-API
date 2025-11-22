@@ -9,3 +9,271 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model api_clients {
+  id             Int       @id(map: "PK__api_clie__3213E83F58C00A05") @default(autoincrement())
+  nombre_entidad String    @db.VarChar(200)
+  api_key        String    @unique(map: "UQ__api_clie__A2D784400D1BC7D6") @db.VarChar(100)
+  estatus        String?   @default("ACTIVO", map: "DF__api_clien__estat__6477ECF3") @db.VarChar(20)
+  created_at     DateTime? @default(now(), map: "DF__api_clien__creat__66603565") @db.DateTime
+}
+
+model consultas_externas {
+  id                  Int       @id(map: "PK__consulta__3213E83F9FAC8011") @default(autoincrement())
+  persona_id          Int
+  entidad_consultante String    @db.VarChar(200)
+  tipo_consulta       String?   @db.VarChar(50)
+  fecha_consulta      DateTime? @default(now(), map: "DF__consultas__fecha__5FB337D6") @db.DateTime
+  personas            personas  @relation(fields: [persona_id], references: [id], onUpdate: NoAction, map: "FK_Consultas_Personas")
+
+  @@index([fecha_consulta], map: "idx_consultas_fecha")
+  @@index([persona_id], map: "idx_consultas_persona")
+}
+
+model historial_pagos {
+  id                       Int                      @id(map: "PK__historia__3213E83F7A05470F") @default(autoincrement())
+  obligacion_id            Int
+  numero_pago              Int
+  fecha_programada         DateTime                 @db.Date
+  fecha_pago_real          DateTime?                @db.Date
+  monto_programado         Decimal                  @db.Decimal(10, 2)
+  monto_pagado             Decimal?                 @default(0, map: "DF__historial__monto__5535A963") @db.Decimal(10, 2)
+  monto_interes            Decimal?                 @default(0, map: "DF__historial__monto__5629CD9C") @db.Decimal(10, 2)
+  monto_capital            Decimal?                 @default(0, map: "DF__historial__monto__571DF1D5") @db.Decimal(10, 2)
+  dias_atraso_registrado   Int?                     @default(0, map: "DF__historial__dias___5812160E")
+  estatus_pago             String?                  @default("PENDIENTE", map: "DF__historial__estat__59063A47") @db.VarChar(20)
+  notas                    String?                  @db.VarChar(500)
+  created_at               DateTime?                @default(now(), map: "DF__historial__creat__5AEE82B9") @db.DateTime
+  obligaciones_crediticias obligaciones_crediticias @relation(fields: [obligacion_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Pagos_Obligaciones")
+
+  @@index([estatus_pago], map: "idx_pagos_estatus")
+  @@index([obligacion_id], map: "idx_pagos_obligacion")
+}
+
+model obligaciones_crediticias {
+  id                      Int               @id(map: "PK__obligaci__3213E83FB6EC6269") @default(autoincrement())
+  numero_contrato         String            @unique(map: "UQ__obligaci__79CE842A08506572") @db.VarChar(50)
+  persona_id              Int
+  entidad_otorgante       String            @db.VarChar(200)
+  clave_entidad           String?           @db.VarChar(20)
+  tipo_entidad            String?           @db.VarChar(50)
+  tipo_credito            String            @db.VarChar(50)
+  monto_original          Decimal           @db.Decimal(15, 2)
+  saldo_actual            Decimal           @default(0, map: "DF__obligacio__saldo__48CFD27E") @db.Decimal(15, 2)
+  limite_credito          Decimal?          @db.Decimal(15, 2)
+  plazo_meses             Int?
+  pago_mensual_estimado   Decimal?          @db.Decimal(10, 2)
+  fecha_solicitud         DateTime?         @db.Date
+  fecha_apertura          DateTime          @db.Date
+  fecha_vencimiento       DateTime?         @db.Date
+  fecha_cierre            DateTime?         @db.Date
+  fecha_ultimo_pago       DateTime?         @db.Date
+  estatus_credito         String?           @default("VIGENTE", map: "DF__obligacio__estat__49C3F6B7") @db.VarChar(20)
+  dias_atraso             Int?              @default(0, map: "DF__obligacio__dias___4BAC3F29")
+  monto_vencido           Decimal?          @default(0, map: "DF__obligacio__monto__4CA06362") @db.Decimal(15, 2)
+  pagos_atrasados_totales Int?              @default(0, map: "DF__obligacio__pagos__4D94879B")
+  created_at              DateTime?         @default(now(), map: "DF__obligacio__creat__4E88ABD4") @db.DateTime
+  updated_at              DateTime?         @default(now(), map: "DF__obligacio__updat__4F7CD00D") @db.DateTime
+  historial_pagos         historial_pagos[]
+  personas                personas          @relation(fields: [persona_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Obligaciones_Personas")
+
+  @@index([estatus_credito], map: "idx_obligaciones_estatus")
+  @@index([fecha_apertura], map: "idx_obligaciones_fecha")
+  @@index([persona_id], map: "idx_obligaciones_persona")
+}
+
+model personas {
+  id                       Int                        @id(map: "PK__personas__3213E83F54CB3C10") @default(autoincrement())
+  tipo_persona             String                     @db.VarChar(10)
+  rfc                      String                     @unique(map: "UQ__personas__C2B03494F44AEAF2") @db.VarChar(13)
+  email                    String?                    @db.VarChar(150)
+  telefono                 String?                    @db.VarChar(15)
+  direccion                String?                    @db.VarChar(500)
+  estatus                  String?                    @default("ACTIVO", map: "DF__personas__estatu__398D8EEE") @db.VarChar(20)
+  created_at               DateTime?                  @default(now(), map: "DF__personas__create__3B75D760") @db.DateTime
+  updated_at               DateTime?                  @default(now(), map: "DF__personas__update__3C69FB99") @db.DateTime
+  consultas_externas       consultas_externas[]
+  obligaciones_crediticias obligaciones_crediticias[]
+  personas_fisicas         personas_fisicas?
+  personas_morales         personas_morales?
+
+  @@index([rfc], map: "idx_personas_rfc")
+  @@index([tipo_persona], map: "idx_personas_tipo")
+}
+
+model personas_fisicas {
+  persona_id       Int       @id(map: "PK__personas__189F813AB794B555")
+  nombre           String    @db.VarChar(100)
+  apellido_paterno String    @db.VarChar(100)
+  apellido_materno String?   @db.VarChar(100)
+  curp             String    @unique(map: "UQ__personas__2CDDD1948E6750DE") @db.VarChar(18)
+  fecha_nacimiento DateTime? @db.Date
+  ingreso_mensual  Decimal?  @db.Decimal(10, 2)
+  ocupacion        String?   @db.VarChar(100)
+  estado_civil     String?   @db.VarChar(20)
+  personas         personas  @relation(fields: [persona_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_PF_Personas")
+
+  @@index([curp], map: "idx_pf_curp")
+}
+
+model personas_morales {
+  persona_id          Int       @id(map: "PK__personas__189F813AF4D8057B")
+  razon_social        String    @db.VarChar(200)
+  nombre_comercial    String?   @db.VarChar(200)
+  fecha_constitucion  DateTime? @db.Date
+  sector_economico    String?   @db.VarChar(100)
+  ingreso_anual       Decimal?  @db.Decimal(12, 2)
+  numero_empleados    Int?
+  representante_legal String?   @db.VarChar(200)
+  personas            personas  @relation(fields: [persona_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_PM_Personas")
+}
+
+view vw_resumen_crediticio {
+  persona_id                   Int
+  rfc                          String    @db.VarChar(13)
+  tipo_persona                 String    @db.VarChar(10)
+  estatus_persona              String?   @db.VarChar(20)
+  email                        String?   @db.VarChar(150)
+  telefono                     String?   @db.VarChar(15)
+  fecha_registro               DateTime? @db.DateTime
+  total_obligaciones           Int?
+  obligaciones_vigentes        Int?
+  obligaciones_vencidas        Int?
+  obligaciones_cerradas        Int?
+  obligaciones_canceladas      Int?
+  obligaciones_cartera_vencida Int?
+  obligaciones_reestructuradas Int?
+  monto_total_original         Decimal   @db.Decimal(38, 2)
+  saldo_total_actual           Decimal   @db.Decimal(38, 2)
+  monto_total_vencido          Decimal   @db.Decimal(38, 2)
+  limite_credito_total         Decimal   @db.Decimal(38, 2)
+  max_dias_atraso              Int
+  total_pagos_atrasados        Int
+  fecha_credito_mas_antiguo    DateTime? @db.Date
+  fecha_credito_mas_reciente   DateTime? @db.Date
+  meses_historial_crediticio   Int?
+}
+
+view vw_persona_completa {
+  id                    Int
+  rfc                   String    @db.VarChar(13)
+  tipo_persona          String    @db.VarChar(10)
+  email                 String?   @db.VarChar(150)
+  telefono              String?   @db.VarChar(15)
+  direccion             String?   @db.VarChar(500)
+  estatus               String?   @db.VarChar(20)
+  created_at            DateTime? @db.DateTime
+  updated_at            DateTime? @db.DateTime
+  curp                  String?   @db.VarChar(18)
+  nombre                String?   @db.VarChar(100)
+  apellido_paterno      String?   @db.VarChar(100)
+  apellido_materno      String?   @db.VarChar(100)
+  fecha_nacimiento      DateTime? @db.Date
+  ingreso_mensual       Decimal?  @db.Decimal(10, 2)
+  ocupacion             String?   @db.VarChar(100)
+  estado_civil          String?   @db.VarChar(20)
+  razon_social          String?   @db.VarChar(200)
+  nombre_comercial      String?   @db.VarChar(200)
+  fecha_constitucion    DateTime? @db.Date
+  sector_economico      String?   @db.VarChar(100)
+  ingreso_anual         Decimal?  @db.Decimal(12, 2)
+  numero_empleados      Int?
+  representante_legal   String?   @db.VarChar(200)
+  nombre_identificacion String?   @db.VarChar(302)
+}
+
+view vw_detalle_obligaciones {
+  obligacion_id                 Int
+  numero_contrato               String    @db.VarChar(50)
+  persona_id                    Int
+  rfc                           String    @db.VarChar(13)
+  tipo_persona                  String    @db.VarChar(10)
+  nombre_completo               String?   @db.VarChar(302)
+  telefono                      String?   @db.VarChar(15)
+  email                         String?   @db.VarChar(150)
+  entidad_otorgante             String    @db.VarChar(200)
+  clave_entidad                 String?   @db.VarChar(20)
+  tipo_entidad                  String?   @db.VarChar(50)
+  tipo_credito                  String    @db.VarChar(50)
+  monto_original                Decimal   @db.Decimal(15, 2)
+  saldo_actual                  Decimal   @db.Decimal(15, 2)
+  limite_credito                Decimal?  @db.Decimal(15, 2)
+  plazo_meses                   Int?
+  pago_mensual_estimado         Decimal?  @db.Decimal(10, 2)
+  fecha_solicitud               DateTime? @db.Date
+  fecha_apertura                DateTime  @db.Date
+  fecha_vencimiento             DateTime? @db.Date
+  fecha_cierre                  DateTime? @db.Date
+  fecha_ultimo_pago             DateTime? @db.Date
+  estatus_credito               String?   @db.VarChar(20)
+  dias_atraso                   Int?
+  monto_vencido                 Decimal?  @db.Decimal(15, 2)
+  pagos_atrasados_totales       Int?
+  porcentaje_deuda_original     Decimal?  @db.Decimal(37, 18)
+  porcentaje_utilizacion_limite Decimal?  @db.Decimal(37, 18)
+  meses_desde_apertura          Int?
+  meses_hasta_vencimiento       Int?
+  created_at                    DateTime? @db.DateTime
+  updated_at                    DateTime? @db.DateTime
+}
+
+view vw_historial_pagos {
+  pago_id                     Int
+  obligacion_id               Int
+  numero_contrato             String    @db.VarChar(50)
+  tipo_credito                String    @db.VarChar(50)
+  persona_id                  Int
+  rfc                         String    @db.VarChar(13)
+  numero_pago                 Int
+  fecha_programada            DateTime  @db.Date
+  fecha_pago_real             DateTime? @db.Date
+  monto_programado            Decimal   @db.Decimal(10, 2)
+  monto_pagado                Decimal?  @db.Decimal(10, 2)
+  monto_interes               Decimal?  @db.Decimal(10, 2)
+  monto_capital               Decimal?  @db.Decimal(10, 2)
+  dias_atraso_registrado      Int?
+  estatus_pago                String?   @db.VarChar(20)
+  notas                       String?   @db.VarChar(500)
+  entidad_otorgante           String    @db.VarChar(200)
+  dias_desde_fecha_programada Int?
+  porcentaje_pagado           Decimal?  @db.Decimal(27, 13)
+  monto_pendiente             Decimal?  @db.Decimal(11, 2)
+  fue_pagado                  Int
+  fue_pago_tardio             Int
+  created_at                  DateTime? @db.DateTime
+}
+
+view vw_pagos_pendientes {
+  pago_id                Int
+  obligacion_id          Int
+  numero_contrato        String   @db.VarChar(50)
+  tipo_credito           String   @db.VarChar(50)
+  persona_id             Int
+  rfc                    String   @db.VarChar(13)
+  tipo_persona           String   @db.VarChar(10)
+  nombre_completo        String?  @db.VarChar(302)
+  numero_pago            Int
+  fecha_programada       DateTime @db.Date
+  monto_programado       Decimal  @db.Decimal(10, 2)
+  monto_pagado           Decimal? @db.Decimal(10, 2)
+  dias_atraso_registrado Int?
+  estatus_pago           String?  @db.VarChar(20)
+  entidad_otorgante      String   @db.VarChar(200)
+  dias_atraso_calculado  Int?
+}
+
+view vw_estadisticas_pago {
+  persona_id                 Int
+  rfc                        String   @db.VarChar(13)
+  obligacion_id              Int
+  numero_contrato            String   @db.VarChar(50)
+  total_pagos_programados    Int?
+  pagos_realizados           Int?
+  pagos_tardios              Int?
+  pagos_no_realizados        Int?
+  monto_total_programado     Decimal? @db.Decimal(38, 2)
+  monto_total_pagado         Decimal? @db.Decimal(38, 2)
+  monto_total_pendiente      Decimal? @db.Decimal(38, 2)
+  promedio_dias_atraso       Float?
+  max_dias_atraso_registrado Int?
+  porcentaje_cumplimiento    Float?
+}
