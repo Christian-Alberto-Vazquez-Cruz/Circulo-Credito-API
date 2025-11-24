@@ -63,9 +63,7 @@ export class ObligacionesController {
             });
 
             return responderConExito(
-                res,
-                200,
-                OBLIGACIONES_ENCONTRADAS(detalles.length),
+                res, 200, OBLIGACIONES_ENCONTRADAS(detalles.length),
                 detalles
             );
 
