@@ -84,7 +84,7 @@ export class PagosController {
         }
     }
 
-    static async getEstadisticasPagoPorRFC(){
+    static async getEstadisticasPagoPorRFC(req, res){
         try {
             const validacion = rfcSchema.safeParse(req.params);
             
